@@ -1,0 +1,25 @@
+import numpy as np
+
+# Fungsi untuk menghitung nilai VAR dengan windowing
+def calculate_var_with_windowing(signal, window_size, overlap):
+    var_values = []
+    start = 0
+
+    while start + window_size <= len(signal):
+        window = signal[start:start+window_size]
+        var = np.var(window)
+        var_values.append(var)
+        start += window_size - overlap
+
+    return var_values
+
+# Contoh data sinyal EMG
+emg_signal = np.random.rand(1000)  # Data sinyal EMG
+window_size = 100  # Ukuran jendela
+overlap = 50  # Overlap antarjendela
+
+# Hitung nilai VAR dengan windowing
+var_values = calculate_var_with_windowing(emg_signal, window_size, overlap)
+
+# Tampilkan nilai VAR
+print("Nilai VAR dari sinyal EMG:", var_values)
