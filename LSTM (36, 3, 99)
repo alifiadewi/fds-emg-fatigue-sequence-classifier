@@ -33,3 +33,33 @@ stop_training_callback = StopTrainingAtAccuracy(target_accuracy)
 
 # Train the model with the custom callback
 model.fit(emg_after, output, epochs=400, batch_size=32, callbacks=[stop_training_callback])
+
+model.summary()
+
+loss, accuracy = model.evaluate(emg_after_test, output_test)
+print(f'Test Loss: {loss}, Test Accuracy: {accuracy}')
+
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+
+# Predict the classes on the test set
+predicted_labels = model.predict(emg_after_test)
+predicted_labels = np.round(predicted_labels).astype(int).flatten()
+
+# Assuming output_test contains the true labels
+true_labels = output_test.flatten()
+
+# Compute the confusion matrix
+cm = confusion_matrix(true_labels, predicted_labels)
+
+# Create a confusion matrix display
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[0, 1])
+
+# Plot the confusion matrix
+fig, ax = plt.subplots(figsize=(8, 6))  # Customize figure size
+disp.plot(cmap=plt.cm.Blues, ax=ax)
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.show()
