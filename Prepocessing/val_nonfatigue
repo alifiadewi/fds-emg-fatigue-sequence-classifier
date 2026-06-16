@@ -1,0 +1,59 @@
+import os #preprocessing semua file sekaligus dalam satu folder val non fatigue
+import pandas as pd
+
+# Define the directory containing CSV files
+directory = non_fatigue_dir_val
+output_directory = 'content/ASB_after_prepro/non_fatigue/val non fatigue'
+if not os.path.exists(output_directory):
+    os.makedirs(output_directory)
+
+# Iterate through each file in the directory
+for filename in os.listdir(directory):
+    if filename.endswith('.csv'):  # Process only CSV files
+        filepath = os.path.join(directory, filename)
+
+        # Read the CSV file into a DataFrame
+        df = pd.read_csv(filepath)
+
+        # Extract the amplitude column
+        amplitude = df['amplitudo']
+
+        # Calculate the baseline (e.g., mean or median of the signal)
+        baseline = amplitude.mean()
+
+        # Subtract the baseline from the entire signal
+        zeroed_amplitude = amplitude - baseline
+
+        absolute_amplitude = zeroed_amplitude.abs()
+
+        # Replace the zeroed amplitude column in the DataFrame with the absolute values
+        df['amplitudo'] = absolute_amplitude
+
+        # Menentukan detik awal dan akhir segmentasi
+        start_time_seconds_1 = 16
+        end_time_seconds_1 = 21
+
+        # Konversi detik ke indeks sampel
+        sampling_rate = 1000
+        start_index_1 = start_time_seconds_1 * sampling_rate
+        end_index_1 = end_time_seconds_1 * sampling_rate
+
+        # Memotong sinyal EMG menjadi segmentasi yang diinginkan
+        segmented_emg_1 = df.iloc[start_index_1:end_index_1]
+
+        #segment kedua
+        start_time_seconds_2 = 30  # Detik awal segmentasi kedua
+        end_time_seconds_2 = 35    # Detik akhir segmentasi kedua
+
+        # Konversi detik ke indeks sampel untuk segmentasi kedua
+        start_index_2 = start_time_seconds_2 * sampling_rate
+        end_index_2 = end_time_seconds_2 * sampling_rate
+
+        # Memotong sinyal EMG menjadi segmentasi kedua
+        segmented_emg_2 = df.iloc[start_index_2:end_index_2]
+
+        #hasil prepo dari semua file disimpen dalem folder output
+        output_filename_segment_1 = os.path.join(output_directory, f'zeroed_absolute_segment1_{filename}')
+        segmented_emg_1.to_csv(output_filename_segment_1, index=False)
+        output_filename_segment_2 = os.path.join(output_directory, f'zeroed_absolute_segment2_{filename}')
+        segmented_emg_2.to_csv(output_filename_segment_2, index=False)
