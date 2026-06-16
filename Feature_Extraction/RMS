@@ -1,0 +1,24 @@
+import numpy as np
+
+# Function to calculate RMS values using windowing
+def calculate_rms_with_windowing(signal, window_size, overlap):
+    rms_values = []
+    start = 0
+
+    while start + window_size <= len(signal):
+        window = signal[start:start+window_size]
+        rms = np.sqrt(np.mean(np.square(window)))
+        rms_values.append(rms)
+        start += window_size - overlap
+
+    return rms_values
+
+# Example parameters
+window_size = 100  # Define the size of the window
+overlap = 50  # Define the overlap between windows
+
+# Example EMG signal data
+emg_signal = np.random.rand(1000)  # Replace this with your actual EMG signal data
+
+# Calculate RMS values with windowing
+rms_values = calculate_rms_with_windowing(emg_signal, window_size, overlap)
